@@ -7,6 +7,20 @@ var reader;
 
     EPUBJS.filePath = calibre.filePath;
     EPUBJS.cssPath = calibre.cssPath;
+    EPUBJS.Hooks.register('beforeChapterDisplay').pageAnimation = function (callback, renderer) {
+    window.setTimeout(function () {
+        var style = renderer.doc.createElement("style");
+        style.innerHTML = "*{-webkit-transition: transform {t} ease;-moz-transition: tranform {t} ease;-o-transition: transform {t} ease;-ms-transition: transform {t} ease;transition: transform {t} ease;}";
+        style.innerHTML = style.innerHTML.split("{t}").join("0.5s");
+        renderer.doc.body.appendChild(style);
+    }, 100)
+    if (callback) {
+        callback();
+    }
+    };
+    EPUBJS.Render.Iframe.prototype.setLeft = function(leftPos){
+    this.docEl.style[this.transform] = 'translate('+ (-leftPos) + 'px, 0)';
+    }
 
     reader = ePubReader(calibre.bookUrl, {
         restore: true,
